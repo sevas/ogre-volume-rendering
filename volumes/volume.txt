@@ -1,0 +1,3 @@
+- Download at http://www-graphics.stanford.edu/data/voldata/MRbrain.tar.gz
+- Unarchive to MRbrain\MRbrain.[1...n]
+

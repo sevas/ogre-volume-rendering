@@ -344,3 +344,45 @@ void OgreApplication::_createGrid(int _units)
     grid->setQueryFlags(0x00);
     gridNode->attachObject(grid);
 }
+//-----------------------------------------------------------------------------
+void OgreApplication::_createLight()
+{
+	mBBset = mSceneMgr->createBillboardSet("Light BB");
+	mBBset->setMaterialName("Objects/Flare");
+	mLightFlare = mBBset->createBillboard(Vector3::ZERO);
+
+	mLight = mSceneMgr->createLight("main light");
+	mLight->setType(Light::LT_POINT);
+	mLight->setDiffuseColour(ColourValue::White);
+	mLight->setSpecularColour(ColourValue::White);
+
+	mLightNode = mSceneMgr->getRootSceneNode()->createChildSceneNode("light node");
+	mLightNode->attachObject(mLight);
+	mLightNode->attachObject(mBBset);
+
+
+	//#ifdef ANIMATE_LIGHT
+	//	Real totalTime = 10;                
+	//
+	//	Animation *anim = mSceneMgr->createAnimation("Light Track", totalTime);
+	//	anim->setInterpolationMode(Animation::IM_SPLINE);
+	//
+	//	NodeAnimationTrack *track = anim->createNodeTrack(0, mLightNode);
+	//	TransformKeyFrame *key;      
+	//
+	//	Real precision = 36, amplitude = 300;
+	//	int keyframeIndex = 0;
+	//	for(float phi=0.0; phi <= 2*Math::PI; phi+= Math::PI / precision)
+	//	{
+	//		key = track->createNodeKeyFrame(phi * (totalTime/ (2*Math::PI)));
+	//		key->setTranslate(Vector3(amplitude*Math::Cos(phi)
+	//			,amplitude
+	//			,amplitude*Math::Sin(phi)));
+	//	}
+	//
+	//	mAnimState = mSceneMgr->createAnimationState("Light Track");
+	//	mAnimState->setEnabled(true);
+	//#else
+	mLightNode->setPosition(0, 500, 500);
+	//#endif
+}

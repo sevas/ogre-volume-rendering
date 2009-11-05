@@ -54,6 +54,7 @@ protected:
 
 protected:
     void _createGrid(int);
+	void _createLight();
 
 	String mWindowTitle;
 	Root *mRoot;
@@ -67,6 +68,11 @@ protected:
     OIS::InputManager *mInputManager;
     OIS::Keyboard *mKeyboard;
     OIS::Mouse *mMouse;
+
+	BillboardSet *mBBset;
+	Billboard *mLightFlare;
+	Light *mLight;
+	SceneNode *mLightNode;
 };
  
 #endif // __OgreApplication_h__

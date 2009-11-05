@@ -1,0 +1,37 @@
+//------------------------------------------------------------------------------
+vertex_program VolumeRender/SlicerVP cg
+{
+	source		VolRender.cg
+	entry_point	main_vp
+	profiles	vs_1_1 arbvp1
+	
+	default_params
+	{ 
+		param_named_auto   worldViewProj  worldviewproj_matrix
+	}
+	
+}
+//------------------------------------------------------------------------------
+fragment_program VolumeRender/SlicerFP cg
+{
+	source		 VolRender.cg
+	entry_point	 main_fp
+	profiles	 ps_1_1 arbfp1 fp20
+}
+//------------------------------------------------------------------------------
+material VolumeRender/Slicer
+{
+	technique
+	{
+		pass
+		{
+			vertex_program_ref VolumeRender/SlicerVP
+			{
+				param_named_auto slice custom 1;
+			}
+			fragment_program_ref VolumeRender/SlicerFP
+			{}
+		}
+	}
+}
+//------------------------------------------------------------------------------
