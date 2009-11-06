@@ -19,7 +19,7 @@ VertexOutput main_vp( AppData IN,
 
   VertexOutput OUT;
   OUT.position = mul(worldViewProj, float4(IN.position, 1));
-  OUT.texcoord = float3(IN.texcoord.xy, slice);
+  OUT.texcoord = float3(IN.texcoord.xy, 1.0);
 
   return OUT;
 }

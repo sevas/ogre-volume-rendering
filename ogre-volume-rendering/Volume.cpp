@@ -55,6 +55,6 @@ unsigned short Volume::getVoxelValue(unsigned _x, unsigned _y, unsigned _z)
 		return mSlices[_z][_y*mSliceWidth + _x];
 	}
 	else
-		return 0;
+		return -1;
 }
 //-----------------------------------------------------------------------------
