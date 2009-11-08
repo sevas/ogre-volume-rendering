@@ -31,6 +31,7 @@ protected:
 	void _createCube();
 	void _createSlice();
 
+	bool frameStarted(const Ogre::FrameEvent&);
 
 protected:
 	Volume mVolume;
@@ -49,5 +50,7 @@ protected:
 	Volume::Slice mSlice;
 	Ogre::TexturePtr mSliceTexture;
 	Ogre::MaterialPtr mSliceMaterial;
+
+	Ogre::Real mSlicer, mSlicerInc;
 };
 #endif // VolumeRenderingDemoApp_h__

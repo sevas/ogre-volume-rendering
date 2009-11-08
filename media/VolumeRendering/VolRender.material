@@ -8,6 +8,7 @@ vertex_program VolumeRender/SlicerVP cg
 	default_params
 	{ 
 		param_named_auto   worldViewProj  worldviewproj_matrix
+		//param_named slice float4 0.3 0 0 0
 	}
 	
 }
@@ -27,7 +28,7 @@ material VolumeRender/Slicer
 		{
 			vertex_program_ref VolumeRender/SlicerVP
 			{
-				param_named_auto slice custom 1;
+				//param_named slice custom 1;
 			}
 			fragment_program_ref VolumeRender/SlicerFP
 			{}

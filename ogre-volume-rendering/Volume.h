@@ -5,8 +5,8 @@
 #include <vector>
 
 typedef union {
-	Ogre::uint16 u16;
-	Ogre::uint8 u8 [ 2 ];
+	unsigned short u16;
+	unsigned char  u8[2];
 } U16_U8;
 
 unsigned short swapBytes(unsigned short);

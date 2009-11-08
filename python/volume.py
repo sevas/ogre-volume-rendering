@@ -29,7 +29,7 @@ def show_slice(in_dir, basename, slice_num):
     #img = img.byteswap()
     #img = ((img.astype("float")/65536)**3)*256
     #img = (((img.astype("float")/65536)**0.5)*65536).astype('uint16')
-    plt.imshow(img, cmap=plt.cm.gray)
+    plt.imshow(img)#, cmap=plt.cm.gray)
     plt.show()
 
 
