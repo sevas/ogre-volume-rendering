@@ -64,6 +64,7 @@ bool OgreApplication::initialise()
 
     createInputSystem();
     createFrameListener();
+	_createDebugOverlay();
 
     return true;
 }
@@ -222,6 +223,7 @@ void OgreApplication::windowClosed(RenderWindow* rw)
 //-----------------------------------------------------------------------------
 bool OgreApplication::frameStarted(const FrameEvent& evt)
 {
+	_updateDebugOverlay();
     mKeyboard->capture();
     mMouse->capture();
     if (mKeyboard->isKeyDown(OIS::KC_ESCAPE))
@@ -386,3 +388,43 @@ void OgreApplication::_createLight()
 	mLightNode->setPosition(0, 500, 500);
 	//#endif
 }
+//-----------------------------------------------------------------------------
+void OgreApplication::_createDebugOverlay()
+{
+	new TextRenderer();
+
+	mDebugText = TextRenderer::getSingletonPtr();
+
+	int x_offset=100, y_offset=18, w=100, h=18;
+
+	mDebugText->addTextBox("Batches_", "#Batches : "
+		, 10, 10, w, h
+		, ColourValue(0.7,0.7,0.7));
+	mDebugText->addTextBox("Batches", "0"
+		, x_offset, 10, w, h
+		, ColourValue(1.0,1.0,1.0));
+	mDebugText->addTextBox("FPS_", "#FPS : "
+		, 10, 10+y_offset, w, h
+		, ColourValue(0.7,0.7,0.7));
+	mDebugText->addTextBox("FPS", "0"
+		, x_offset, 10+y_offset, w, h
+		, ColourValue(1.0,1.0,1.0));
+
+	mDebugText->addTextBox("Triangles_", "#tris : "
+		, 10, 10+y_offset*2, w, h
+		, ColourValue(0.7,0.7,0.7));
+	mDebugText->addTextBox("Triangles", "0"
+		, x_offset, 10+y_offset*2, w, h
+		, ColourValue(1.0,1.0,1.0));
+
+
+
+}
+//-----------------------------------------------------------------------------
+void OgreApplication::_updateDebugOverlay()
+{
+	mDebugText->setText("Batches", StringConverter::toString(mWindow->getBatchCount()));
+	mDebugText->setText("FPS", StringConverter::toString(mWindow->getLastFPS()));
+	mDebugText->setText("Triangles", StringConverter::toString(mWindow->getTriangleCount()));
+}
+//-----------------------------------------------------------------------------

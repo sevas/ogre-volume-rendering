@@ -48,5 +48,6 @@ void TextRenderer::removeTextBox(const std::string& ID)
 void TextRenderer::setText(const std::string& ID, const std::string& Text)
 {
     Ogre::OverlayElement* textBox = _overlayMgr->getOverlayElement(ID);
-    textBox->setCaption(Text);
+	if(textBox)
+		textBox->setCaption(Text);
 }

@@ -8,6 +8,17 @@
 
 namespace fs = boost::filesystem;
 
+unsigned short swapBytes(unsigned short u)
+{
+	U16_U8 source;
+	U16_U8 dest;
+
+	source.u16 = u;
+	dest.u8[0] = source.u8[1];
+	dest.u8[1] = source.u8[0];
+
+	return dest.u16;
+}
 //-----------------------------------------------------------------------------
 Volume::Volume(void)
 	:mSliceHeight(256)
@@ -37,10 +48,10 @@ void Volume::loadSlices(const std::string &_directory, unsigned _nSlices)
 		{
 			for(unsigned i=0 ; i<mSliceWidth*mSliceHeight ; ++i)
 			{
-				
-				unsigned short val;
-				val = (unsigned short) file.get();
-				mSlices[z][i] = val;
+				U16_U8 val;
+				val.u8[0] = file.get();
+				val.u8[1] = file.get();
+				mSlices[z][i] = val.u16;
 			}
 			file.close();
 		}

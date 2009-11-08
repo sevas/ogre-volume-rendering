@@ -5,6 +5,8 @@
 #include <OIS/OIS.h>
 #include <CEGUI/CEGUI.h>
 
+#include "TextRenderer.h"
+
 using namespace Ogre;
 
 class OgreApplication	: public FrameListener
@@ -55,6 +57,8 @@ protected:
 protected:
     void _createGrid(int);
 	void _createLight();
+	void _createDebugOverlay();
+	void _updateDebugOverlay();
 
 	String mWindowTitle;
 	Root *mRoot;
@@ -73,6 +77,8 @@ protected:
 	Billboard *mLightFlare;
 	Light *mLight;
 	SceneNode *mLightNode;
+
+	TextRenderer *mDebugText;
 };
  
 #endif // __OgreApplication_h__

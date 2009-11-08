@@ -25,6 +25,9 @@ protected:
 	void createScene();
 	void _loadVolume();
 	void _create3DTextureFromVolume();
+	void _loadSlice( const std::string &_directory
+					,const std::string& _basename);
+	void _createTextureFromSlice();
 	void _createCube();
 	void _createSlice();
 
@@ -42,5 +45,9 @@ protected:
 
 	MyVertexData mCube[8];
 	MyCubeFace   mCubeFaces[6];
+
+	Volume::Slice mSlice;
+	Ogre::TexturePtr mSliceTexture;
+	Ogre::MaterialPtr mSliceMaterial;
 };
 #endif // VolumeRenderingDemoApp_h__

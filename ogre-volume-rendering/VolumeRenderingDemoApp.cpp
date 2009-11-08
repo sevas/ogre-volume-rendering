@@ -1,68 +1,7 @@
 #include "precompiled.h"
 #include "VolumeRenderingDemoApp.h"
 
-
-
-unsigned short bswap_old(unsigned short im)
-{ 
-	typedef union {
-		char b0, b1;
-		unsigned short wd;
-	} Wb;
-
-
-	Wb im1;
-	im1.wd = im;
-	Wb out;
-
-	out.b0 = im1.b1;
-	out.b1 = im1.b0;
-
-	return out.wd;
-}
-
-
-
-
-unsigned short bswap(unsigned short input) 
-{
-	unsigned short out = (unsigned short)(
-							((0x0F & input) << 4) |
-							((0xF0 & input) >> 4));
-	return out;
-}
-
-
-unsigned short bswap_old3(unsigned short input)
-{
-	unsigned short out;
-	unsigned short *p_in, *p_out;
-	p_in = &input;
-	p_out = &out;
-
-	*(char*)p_out = *((char*)p_in+1);
-	*((char*)p_out+1) = *((char*)p_in);
-	return out;
-}
-
-
-typedef union {
-	Ogre::uint16 u16;
-	Ogre::uint8 u8 [ 2 ];
-} U16_U8;
-
-Ogre::uint8 _bswap(Ogre::uint16 u)
-{
-	U16_U8 source;
-	U16_U8 dest;
-
-	source.u16 = u;
-	dest.u8[0] = source.u8[1];
-	dest.u8[1] = source.u8[0];
-	
-
-	return dest.u16;
-}
+#include <boost/format.hpp>
 
 
 //-----------------------------------------------------------------------------
@@ -83,7 +22,10 @@ void VolumeRenderingDemoApp::createScene()
 	_loadVolume();
 	_create3DTextureFromVolume();
 	_createCube();
+
+	_loadSlice("../volumes/MRbrain2", "MRbrain");
 	_createSlice();
+	_createTextureFromSlice();
 }
 //-----------------------------------------------------------------------------
 void VolumeRenderingDemoApp::_loadVolume()
@@ -110,42 +52,24 @@ void VolumeRenderingDemoApp::_create3DTextureFromVolume()
 	buffer->lock(HardwareBuffer::HBL_NORMAL);
 	const Ogre::PixelBox &pb = buffer->getCurrentLock();
 
-	Ogre::uint8 *pbptr = static_cast<Ogre::uint8*>(pb.data);
-	size_t x, y, z;
+	Ogre::uint16 *pbptr = static_cast<Ogre::uint16*>(pb.data);
+	//size_t x, y, z;
 
-	for(z=pb.front; z<pb.back; z++) 
+	for(size_t z = pb.front ; z<pb.back ; z++)
 	{
-		for(y=pb.top; y<pb.bottom; y++)
+		for (size_t y=pb.top ; y<pb.bottom; y++)
 		{
-			for(x=pb.left; x<pb.right; x++)
+			for(size_t x=pb.left ; x<pb.right; x++)
 			{
 				Ogre::uint16 val = mVolume.getVoxelValue(x, y, z);
-				
-				*((Ogre::uint16*)&pbptr[x]) = val;
+				pbptr[x]= val;
 
-
-				//if(x > 255 || y > 255)
-				//{
-				//	float foo = 2;
-				//}
-
-				//if(z==pb.front || z==(pb.back-1) || y==pb.top|| y==(pb.bottom-1) ||
-				//	x==pb.left || x==(pb.right-1))
-				//{
-				//	// On border, must be zero
-				//	pbptr[x] = 0;
-				//} 
-				//else
-				//{
-				//	//Density = (curr[x][y][z].dens*elapsedt + last[x][y][z].dens*(totalt-elapsedt))/totalt;
-
-				//	((Ogre::uint16*)&pbptr[x])[0] = static_cast<Ogre::uint16>(mVolume.getVoxelValue(x, y, z)); // R
-				//}   
 			}
 			pbptr += pb.rowPitch;
 		}
 		pbptr += pb.getSliceSkip();
 	}
+
 
 	buffer->unlock();
 
@@ -156,8 +80,77 @@ void VolumeRenderingDemoApp::_create3DTextureFromVolume()
 						ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
 
 	mVolumeMaterial->getTechnique(0)->getPass(0)->createTextureUnitState("MRbrain Volume");
-	//mVolumeMaterial->getTechnique(0)->getPass(0)->setSceneBlending(SBT_TRANSPARENT_ALPHA);
+	mVolumeMaterial->getTechnique(0)->getPass(0)->setSceneBlending(SBT_TRANSPARENT_ALPHA);
 
+}
+//-----------------------------------------------------------------------------
+void VolumeRenderingDemoApp::_loadSlice( const std::string &_directory
+										,const std::string& _basename)
+{
+	mSlice.resize(256*256);
+	std::ifstream file;
+	boost::format fmt("%s/%s.%d");
+	fmt % _directory % "MRbrain" % 50;
+	std::string filename = fmt.str();
+	file.open(filename.c_str(), std::ios_base::binary);
+	if(file)
+	{
+		for(unsigned i=0 ; i<256*256; ++i)
+		{
+
+			//unsigned short val;
+			U16_U8 val;
+			val.u8[0] = file.get();
+			val.u8[1] = file.get();
+			mSlice[i] = val.u16;
+		}
+		file.close();
+	}
+}
+//-----------------------------------------------------------------------------
+void VolumeRenderingDemoApp::_createTextureFromSlice()
+{
+	using namespace Ogre;
+	// Create the texture
+	mSliceTexture = TextureManager::getSingleton().createManual(
+		"MRbrain Slice", // name
+		ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME,
+		TEX_TYPE_2D,      // type
+		256, 256,         // width & height
+		0,                // number of mipmaps
+		PF_SHORT_L,			 // pixel format
+		HardwareBuffer::HBU_STATIC_WRITE_ONLY );		
+
+	
+	HardwarePixelBufferSharedPtr buffer = mSliceTexture->getBuffer();
+
+	buffer->lock(HardwareBuffer::HBL_NORMAL);
+	const Ogre::PixelBox &pb = buffer->getCurrentLock();
+
+	Ogre::uint16 *pbptr = static_cast<Ogre::uint16*>(pb.data);
+
+	for (size_t y=pb.top ; y<pb.bottom; y++)
+	{
+		for(size_t x=pb.left ; x<pb.right; x++)
+		{
+			Ogre::uint16 val = mSlice[y*256 + x];
+			pbptr[x]= val;
+
+		}
+		pbptr += pb.rowPitch;
+	}
+
+
+
+	buffer->unlock();
+
+
+	// Create a material using the texture
+	mSliceMaterial = MaterialManager::getSingleton().create(
+		"SliceMaterial", // name
+		ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
+
+	mSliceMaterial->getTechnique(0)->getPass(0)->createTextureUnitState("MRbrain Slice");
 }
 //-----------------------------------------------------------------------------
 void VolumeRenderingDemoApp::_createCube()
@@ -165,29 +158,29 @@ void VolumeRenderingDemoApp::_createCube()
 	float z = 0.0f;
 	// vertices
 	mCube[0].Position=Vector3(0.0f,	0.0f,	z);
-	mCube[0].TexCoord=Vector3(0.0f,	0.0f,	z);
+	mCube[0].TexCoord=Vector3(0.0f,	1.0f,	z);
 
 	mCube[1].Position=Vector3(0.0f,	1.0f,	z);
-	mCube[1].TexCoord=Vector3(0.0f,	1.0f,	z);
+	mCube[1].TexCoord=Vector3(0.0f,	0.0f,	z);
 	
 	mCube[2].Position=Vector3(1.0f,	1.0f,	z);
-	mCube[2].TexCoord=Vector3(1.0f,	1.0f,	z);
+	mCube[2].TexCoord=Vector3(1.0f,	0.0f,	z);
 
 	mCube[3].Position=Vector3(1.0f,	0.0f,	z);
-	mCube[3].TexCoord=Vector3(1.0f,	0.0f,	z);
+	mCube[3].TexCoord=Vector3(1.0f,	1.0f,	z);
 
-	z = 1.0f;
+	z = 0.5f;
 	mCube[4].Position=Vector3(0.0f,	0.0f,	z);
-	mCube[4].TexCoord=Vector3(0.0f,	0.0f,	z);
+	mCube[4].TexCoord=Vector3(0.0f,	1.0f,	z);
 
 	mCube[5].Position=Vector3(0.0f,	1.0f,	z);
-	mCube[5].TexCoord=Vector3(0.0f,	1.0f,	z);
+	mCube[5].TexCoord=Vector3(0.0f,	0.0f,	z);
 
 	mCube[6].Position=Vector3(1.0f,	1.0f,	z);
-	mCube[6].TexCoord=Vector3(1.0f,	1.0f,	z);
+	mCube[6].TexCoord=Vector3(1.0f,	0.0f,	z);
 
 	mCube[7].Position=Vector3(1.0f,	0.0f,	z);
-	mCube[7].TexCoord=Vector3(1.0f,	0.0f,	z);
+	mCube[7].TexCoord=Vector3(1.0f,	1.0f,	z);
 
 	// faces
 	unsigned i=0;
@@ -293,35 +286,37 @@ void VolumeRenderingDemoApp::_createSlice()
 
 	mSlicePlane->position(0,0,0);
 	mSlicePlane->normal(Vector3::UNIT_Z);
-	mSlicePlane->textureCoord(0.0f, 0.0f, z);
+	mSlicePlane->textureCoord(0.0f, 1.0f);
 	mSlicePlane->index(idx++);
 
 	mSlicePlane->position(1,0,0);
 	mSlicePlane->normal(Vector3::UNIT_Z);
-	mSlicePlane->textureCoord(1.0f, 0.0f, z);
+	mSlicePlane->textureCoord(1.0f, 1.0f);
 	mSlicePlane->index(idx++);
 
 	mSlicePlane->position(0,1,0);
 	mSlicePlane->normal(Vector3::UNIT_Z);
-	mSlicePlane->textureCoord(0.0f, 1.0f, z);
+	mSlicePlane->textureCoord(0.0f, 0.0f);
 	mSlicePlane->index(idx++);
 
 	mSlicePlane->position(1,1,0);
 	mSlicePlane->normal(Vector3::UNIT_Z);
-	mSlicePlane->textureCoord(1.0f, 1.0f, z);
+	mSlicePlane->textureCoord(1.0f, 0.0f);
 	mSlicePlane->index(idx++);
 
 	mSlicePlane->end();
 
-	MaterialPtr volumeSlicer = MaterialManager::getSingleton().getByName("VolumeRender/Slicer");
-	volumeSlicer->getTechnique(0)->getPass(0)->createTextureUnitState("MRbrain Volume");
+	//MaterialPtr volumeSlicer = MaterialManager::getSingleton().getByName("VolumeRender/Slicer");
+	//volumeSlicer->getTechnique(0)->getPass(0)->createTextureUnitState("MRbrain Volume");
 	
 	//mSlicePlane->getSection(0)->setCustomParameter(0, 0.5f);
 
+	mSlicePlane->setMaterialName(0, "SliceMaterial");
+
 	mSliceNode =  mSceneMgr->getRootSceneNode()->createChildSceneNode();
 	mSliceNode->attachObject(mSlicePlane);
-	mSliceNode->scale(50,50,50);
-	mSliceNode->translate(100, 0, 1);
+	mSliceNode->scale(100,100,10);
+	mSliceNode->translate(-50, -50, 1);
 }
 
 //-----------------------------------------------------------------------------

@@ -26,7 +26,7 @@ def show_slice(in_dir, basename, slice_num):
     f.close()
     img = np.frombuffer(buf, dtype="uint16")
     img = img.reshape((256,256))
-    img = img.byteswap()
+    #img = img.byteswap()
     #img = ((img.astype("float")/65536)**3)*256
     #img = (((img.astype("float")/65536)**0.5)*65536).astype('uint16')
     plt.imshow(img, cmap=plt.cm.gray)
@@ -39,6 +39,6 @@ if __name__ == "__main__":
     #         "MRbrain",
     #         109)
     
-    show_slice("../volumes/MRbrain", "MRbrain", 50)
+    show_slice("../volumes/MRbrain2", "MRbrain", 50)
     
     
