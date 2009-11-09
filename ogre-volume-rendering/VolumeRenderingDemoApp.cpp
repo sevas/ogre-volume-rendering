@@ -157,32 +157,36 @@ void VolumeRenderingDemoApp::_createTextureFromSlice()
 //-----------------------------------------------------------------------------
 void VolumeRenderingDemoApp::_createCube()
 {
-	float z = 0.0f;
+	
 	// vertices
+
+	//back
+	float z=0.0f;
 	mCube[0].Position=Vector3(0.0f,	0.0f,	z);
-	mCube[0].TexCoord=Vector3(0.0f,	1.0f,	z);
+	mCube[0].TexCoord=Vector3(0.0f+0.25f,	1.0f-0.25f,	z+0.25f);
 
 	mCube[1].Position=Vector3(0.0f,	1.0f,	z);
-	mCube[1].TexCoord=Vector3(0.0f,	0.0f,	z);
+	mCube[1].TexCoord=Vector3(0.0f+0.25f,	0.0f+0.25f,	z+0.25f);
 	
 	mCube[2].Position=Vector3(1.0f,	1.0f,	z);
-	mCube[2].TexCoord=Vector3(1.0f,	0.0f,	z);
+	mCube[2].TexCoord=Vector3(1.0f-0.25f,	0.0f+0.25f,	z+0.25f);
 
 	mCube[3].Position=Vector3(1.0f,	0.0f,	z);
-	mCube[3].TexCoord=Vector3(1.0f,	1.0f,	z);
+	mCube[3].TexCoord=Vector3(1.0f-0.25f,	1.0f-0.25f,	z+0.25f);
 
+	//front
 	z = 1.0f;
 	mCube[4].Position=Vector3(0.0f,	0.0f,	z);
-	mCube[4].TexCoord=Vector3(0.0f,	1.0f,	z/2);
+	mCube[4].TexCoord=Vector3(0.0f+0.25f, 1.0f-0.25f, z-0.25f);
 
 	mCube[5].Position=Vector3(0.0f,	1.0f,	z);
-	mCube[5].TexCoord=Vector3(0.0f,	0.0f,	z/2);
+	mCube[5].TexCoord=Vector3(0.0f+0.25f,	0.0f+0.25f,	z-0.25f);
 
 	mCube[6].Position=Vector3(1.0f,	1.0f,	z);
-	mCube[6].TexCoord=Vector3(1.0f,	0.0f,	z/2);
+	mCube[6].TexCoord=Vector3(1.0f-0.25f,	0.0f+0.25f,	z-0.25f);
 
 	mCube[7].Position=Vector3(1.0f,	0.0f,	z);
-	mCube[7].TexCoord=Vector3(1.0f,	1.0f,	z/2);
+	mCube[7].TexCoord=Vector3(1.0f-0.25f,	1.0f-0.25f,	z-0.25f);
 
 	// faces
 	unsigned i=0;
@@ -311,14 +315,33 @@ void VolumeRenderingDemoApp::_createSlice()
 	//mSlicePlane->setMaterialName(0, "VolumeMaterial");
 
 	MaterialPtr volumeSlicer = MaterialManager::getSingleton().getByName("VolumeRender/Slicer");
+	//bind texture unit to material
 	volumeSlicer->getTechnique(0)->getPass(0)->createTextureUnitState("MRbrain Volume");
 	
 	mSlicePlane->setMaterialName(0, "VolumeRender/Slicer");
 	
-	//mSlicePlane->getSection(0)->setCustomParameter(0, Vector4(0.5f, 0,0,0));
 
-	//2d texture
-	//mSlicePlane->setMaterialName(0, "SliceMaterial");
+	// keep a handle to shader parameters
+	Technique* pTechnique =	 volumeSlicer->getTechnique(0);
+	if ( pTechnique ) 
+	{
+		// assuming single pass material
+		Pass* pPass = pTechnique->getPass( 0 );
+		
+		if ( pPass && pPass->hasVertexProgram() ) 
+		{
+			// Retrieve the shader parameters 
+			GpuProgramParametersSharedPtr pParams = pPass->getVertexProgramParameters();
+
+			if ( ! pParams.isNull() )
+			{
+				if ( pParams->_findNamedConstantDefinition( "slice" ) )
+				{
+					mVolumeSlicerParams = pParams;
+				}	
+			}
+		}
+	}
 
 	
 	mSliceNode =  mSceneMgr->getRootSceneNode()->createChildSceneNode();
@@ -337,30 +360,9 @@ bool VolumeRenderingDemoApp::frameStarted(const Ogre::FrameEvent &evt)
 
 	//mSlicePlane->getSection(0)->setCustomParameter(0, Vector4(mSlicer, 0,0,0));
 
-	MaterialPtr pMaterial = MaterialManager::getSingleton().getByName("VolumeRender/Slicer");
-
-	Technique* pTechnique =	 pMaterial->getTechnique(0);
-	//if ( !pTechnique ) return;
-
-	// assuming single pass material
-	Pass* pPass = pTechnique->getPass( 0 );
-	//if ( !pPass || !pPass->hasFragmentProgram() ) return;
-
-	// Retrieve the shader parameters 
-	Ogre::GpuProgramParametersSharedPtr pParams = pPass->getVertexProgramParameters();
-		
-	/*if ( pParams.isNull() )
-	{
-		assert( false );
-		return;
-	}*/
-
-	if ( pParams->_findNamedConstantDefinition( "slice" ) )
-	{
-		pParams->setNamedConstant( "slice", mSlicer );
-	}
-
-
+	// update uniform
+	if (!mVolumeSlicerParams.isNull())
+		mVolumeSlicerParams->setNamedConstant( "slice", mSlicer );
 
 
 

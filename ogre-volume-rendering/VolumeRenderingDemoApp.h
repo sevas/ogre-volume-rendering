@@ -50,6 +50,7 @@ protected:
 	Volume::Slice mSlice;
 	Ogre::TexturePtr mSliceTexture;
 	Ogre::MaterialPtr mSliceMaterial;
+	Ogre::GpuProgramParametersSharedPtr mVolumeSlicerParams;
 
 	Ogre::Real mSlicer, mSlicerInc;
 };
