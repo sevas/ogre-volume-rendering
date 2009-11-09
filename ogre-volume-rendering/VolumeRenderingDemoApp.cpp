@@ -354,10 +354,11 @@ void VolumeRenderingDemoApp::_createSlice()
 bool VolumeRenderingDemoApp::frameStarted(const Ogre::FrameEvent &evt)
 {	using namespace Ogre;
 
-	mSlicer+=mSlicerInc * evt.timeSinceLastFrame;
-	if(mSlicer>1.0f || mSlicer<0.0f)
+	Real inc = mSlicerInc * evt.timeSinceLastFrame;
+	
+	if(mSlicer+inc>1.0f || mSlicer+inc<0.0f)
 		mSlicerInc = -mSlicerInc;
-
+	mSlicer+=inc;
 	//mSlicePlane->getSection(0)->setCustomParameter(0, Vector4(mSlicer, 0,0,0));
 
 	// update uniform
