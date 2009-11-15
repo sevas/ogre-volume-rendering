@@ -161,32 +161,34 @@ void VolumeRenderingDemoApp::_createCube()
 	// vertices
 
 	//back
-	float z=0.0f;
+	Real z=0.0f;
+	Real offset=0.0f;
+
 	mCube[0].Position=Vector3(0.0f,	0.0f,	z);
-	mCube[0].TexCoord=Vector3(0.0f+0.25f,	1.0f-0.25f,	z+0.25f);
+	mCube[0].TexCoord=Vector3(0.0f+offset,	1.0f-offset,	z+offset);
 
 	mCube[1].Position=Vector3(0.0f,	1.0f,	z);
-	mCube[1].TexCoord=Vector3(0.0f+0.25f,	0.0f+0.25f,	z+0.25f);
+	mCube[1].TexCoord=Vector3(0.0f+offset,	0.0f+offset,	z+offset);
 	
 	mCube[2].Position=Vector3(1.0f,	1.0f,	z);
-	mCube[2].TexCoord=Vector3(1.0f-0.25f,	0.0f+0.25f,	z+0.25f);
+	mCube[2].TexCoord=Vector3(1.0f-offset,	0.0f+offset,	z+offset);
 
 	mCube[3].Position=Vector3(1.0f,	0.0f,	z);
-	mCube[3].TexCoord=Vector3(1.0f-0.25f,	1.0f-0.25f,	z+0.25f);
+	mCube[3].TexCoord=Vector3(1.0f-offset,	1.0f-offset,	z+offset);
 
 	//front
 	z = 1.0f;
 	mCube[4].Position=Vector3(0.0f,	0.0f,	z);
-	mCube[4].TexCoord=Vector3(0.0f+0.25f, 1.0f-0.25f, z-0.25f);
+	mCube[4].TexCoord=Vector3(0.0f+offset, 1.0f-offset, z-offset);
 
 	mCube[5].Position=Vector3(0.0f,	1.0f,	z);
-	mCube[5].TexCoord=Vector3(0.0f+0.25f,	0.0f+0.25f,	z-0.25f);
+	mCube[5].TexCoord=Vector3(0.0f+offset,	0.0f+offset,	z-offset);
 
 	mCube[6].Position=Vector3(1.0f,	1.0f,	z);
-	mCube[6].TexCoord=Vector3(1.0f-0.25f,	0.0f+0.25f,	z-0.25f);
+	mCube[6].TexCoord=Vector3(1.0f-offset,	0.0f+offset,	z-offset);
 
 	mCube[7].Position=Vector3(1.0f,	0.0f,	z);
-	mCube[7].TexCoord=Vector3(1.0f-0.25f,	1.0f-0.25f,	z-0.25f);
+	mCube[7].TexCoord=Vector3(1.0f-offset,	1.0f-offset,	z-offset);
 
 	// faces
 	unsigned i=0;
@@ -277,8 +279,8 @@ void VolumeRenderingDemoApp::_createCube()
 	mUnitCube->setMaterialName(0, "VolumeMaterial");
 	mCubeNode = mSceneMgr->getRootSceneNode()->createChildSceneNode();
 	mCubeNode->attachObject(mUnitCube);
-	mCubeNode->scale(50,50,50);
-	mCubeNode->translate(100,0,0);
+	mCubeNode->scale(100,100,100);
+	mCubeNode->translate(-50,0,-50);
 }
 //-----------------------------------------------------------------------------
 void VolumeRenderingDemoApp::_createSlice()
@@ -347,17 +349,19 @@ void VolumeRenderingDemoApp::_createSlice()
 	mSliceNode =  mSceneMgr->getRootSceneNode()->createChildSceneNode();
 	mSliceNode->attachObject(mSlicePlane);
 	mSliceNode->scale(100,100,10);
-	mSliceNode->translate(-50, 0, 1);
+	mSliceNode->translate(-250, 0, 1);
 }
 
 //-----------------------------------------------------------------------------
 bool VolumeRenderingDemoApp::frameStarted(const Ogre::FrameEvent &evt)
 {	using namespace Ogre;
 
-	mSlicer+=mSlicerInc * evt.timeSinceLastFrame;
-	if(mSlicer>1.0f || mSlicer<0.0f)
+	Real inc = mSlicerInc * evt.timeSinceLastFrame;
+	
+	if(mSlicer+inc>1.0f || mSlicer+inc<0.0f)
 		mSlicerInc = -mSlicerInc;
 
+	mSlicer+=inc;
 	//mSlicePlane->getSection(0)->setCustomParameter(0, Vector4(mSlicer, 0,0,0));
 
 	// update uniform
@@ -366,7 +370,7 @@ bool VolumeRenderingDemoApp::frameStarted(const Ogre::FrameEvent &evt)
 
 
 
-	mSliceNode->setPosition(-50, 0, mSlicer*100);
+	mSliceNode->setPosition(-250, 0, mSlicer*100);
 
 	return OgreApplication::frameStarted(evt);
 }
