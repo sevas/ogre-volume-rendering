@@ -19,15 +19,18 @@ VertexOutput main_vp( AppData IN,
 
   VertexOutput OUT;
   OUT.position = mul(worldViewProj, float4(IN.position, 1));
-  OUT.texcoord = IN.texcoord;
+  OUT.texcoord = float3(IN.texcoord.xy, slice.x);
 
   return OUT;
 }
+
 //------------------------------------------------------------------------------
 void main_fp(float3 texcoord	: TEXCOORD0,
 	     out float3 oColor	: COLOR,
 	     uniform sampler3D volume)
 {
+  //  oColor = float3(texcoord.z, 0.0f, 0.0f);
   oColor = tex3D(volume, texcoord);
 }
+
 //------------------------------------------------------------------------------
