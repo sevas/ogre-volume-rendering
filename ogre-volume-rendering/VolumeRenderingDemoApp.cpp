@@ -371,3 +371,4 @@ bool VolumeRenderingDemoApp::frameStarted(const Ogre::FrameEvent &evt)
 
 	return OgreApplication::frameStarted(evt);
 }
+//-----------------------------------------------------------------------------
