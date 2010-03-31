@@ -24,13 +24,15 @@ material VolumeRender/Slicer
 {
 	technique
 	{
+
 		pass
 		{
-			vertex_program_ref VolumeRender/SlicerVP
-			{
-				//param_named slice custom 1;
-			}
-			fragment_program_ref VolumeRender/SlicerFP
+			cull_hardware	none
+			lighting	off
+
+			vertex_program_ref	VolumeRender/SlicerVP
+			{}
+			fragment_program_ref	VolumeRender/SlicerFP
 			{}
 		}
 	}

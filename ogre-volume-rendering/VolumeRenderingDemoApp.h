@@ -41,7 +41,10 @@ protected:
 	Ogre::ManualObject *mUnitCube;
 	Ogre::SceneNode  *mCubeNode;
 
-	Ogre::ManualObject *mSlicePlane;
+	//Ogre::ManualObject *mSlicePlane;
+
+    //Ogre::Rectangle2D *mSlicePlane;
+    Ogre::Entity *mSlicePlane;
 	Ogre::SceneNode  *mSliceNode;
 
 	MyVertexData mCube[8];

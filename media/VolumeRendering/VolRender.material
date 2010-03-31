@@ -3,7 +3,7 @@ vertex_program VolumeRender/RaycastingVP cg
 {
 	source		VolRender.cg
 	entry_point	main_vp
-	profiles	vs_1_1 arbvp1
+	profiles	vs_3_0
 
 	default_params
 	{ 
@@ -15,7 +15,7 @@ fragment_program VolumeRender/RaycastingFP cg
 {
 	source		 VolRender.cg
 	entry_point	 main_fp
-	profiles	 ps_1_1 arbfp1 fp20
+	profiles	 ps_3_0
 }
 //------------------------------------------------------------------------------
 material VolumeRender/Raycasting
@@ -24,9 +24,11 @@ material VolumeRender/Raycasting
 	{
 		pass
 		{
+			cull_hardware	none
+			lighting	off
+
 			vertex_program_ref VolumeRender/RaycastingVP
 			{}
-			}
 			fragment_program_ref VolumeRender/RaycastingrFP
 			{}
 		}

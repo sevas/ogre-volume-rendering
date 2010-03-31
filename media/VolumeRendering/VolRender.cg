@@ -13,8 +13,7 @@ struct VertexOutput
 };
 //------------------------------------------------------------------------------
 VertexOutput main_vp( AppData IN,
-		      uniform float4    slice,
-		      uniform float4x4 worldViewProj)
+                      uniform float4x4 worldViewProj)
 {
 
   VertexOutput OUT;

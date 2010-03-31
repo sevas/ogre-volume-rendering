@@ -288,62 +288,47 @@ void VolumeRenderingDemoApp::_createSlice()
 
 	unsigned idx=0;
 	float z=0.3f;
-	mSlicePlane = mSceneMgr->createManualObject("Slice");
 
-	mSlicePlane->begin("VolumeRender/Slicer", RenderOperation::OT_TRIANGLE_STRIP);
+    
 
-	mSlicePlane->position(0,0,0);
-	mSlicePlane->normal(Vector3::UNIT_Z);
-	mSlicePlane->textureCoord(0.0f, 1.0f, 0.0f);
-	mSlicePlane->index(idx++);
 
-	mSlicePlane->position(1,0,0);
-	mSlicePlane->normal(Vector3::UNIT_Z);
-	mSlicePlane->textureCoord(1.0f, 1.0f, 0.0f);
-	mSlicePlane->index(idx++);
+    Ogre::ManualObject *obj = mSceneMgr->createManualObject("Slice");
 
-	mSlicePlane->position(0,1,0);
-	mSlicePlane->normal(Vector3::UNIT_Z);
-	mSlicePlane->textureCoord(0.0f, 0.0f, 0.0f);
-	mSlicePlane->index(idx++);
+	obj->begin("VolumeRender/SlicerCustom", RenderOperation::OT_TRIANGLE_STRIP);
 
-	mSlicePlane->position(1,1,0);
-	mSlicePlane->normal(Vector3::UNIT_Z);
-	mSlicePlane->textureCoord(1.0f, 0.0f, 0.0f);
-	mSlicePlane->index(idx++);
+	obj->position(0,0,0);
+	obj->normal(Vector3::UNIT_Z);
+	obj->textureCoord(0.0f, 1.0f, 0.0f);
+	obj->index(idx++);
 
-	mSlicePlane->end();
+	obj->position(1,0,0);
+	obj->normal(Vector3::UNIT_Z);
+	obj->textureCoord(1.0f, 1.0f, 0.0f);
+	obj->index(idx++);
 
-	//mSlicePlane->setMaterialName(0, "VolumeMaterial");
+	obj->position(0,1,0);
+	obj->normal(Vector3::UNIT_Z);
+	obj->textureCoord(0.0f, 0.0f, 0.0f);
+	obj->index(idx++);
 
-	MaterialPtr volumeSlicer = MaterialManager::getSingleton().getByName("VolumeRender/Slicer");
+	obj->position(1,1,0);
+	obj->normal(Vector3::UNIT_Z);
+	obj->textureCoord(1.0f, 0.0f, 0.0f);
+	obj->index(idx++);
+
+	obj->end();
+
+	MaterialPtr volumeSlicer = MaterialManager::getSingleton().getByName("VolumeRender/SlicerCustom");
 	//bind texture unit to material
 	volumeSlicer->getTechnique(0)->getPass(0)->createTextureUnitState("MRbrain Volume");
-	
-	mSlicePlane->setMaterialName(0, "VolumeRender/Slicer");
-	
 
-	// keep a handle to shader parameters
-	Technique* pTechnique =	 volumeSlicer->getTechnique(0);
-	if ( pTechnique ) 
-	{
-		// assuming single pass material
-		Pass* pPass = pTechnique->getPass( 0 );
-		
-		if ( pPass && pPass->hasVertexProgram() ) 
-		{
-			// Retrieve the shader parameters 
-			GpuProgramParametersSharedPtr pParams = pPass->getVertexProgramParameters();
 
-			if ( ! pParams.isNull() )
-			{
-				if ( pParams->_findNamedConstantDefinition( "slice" ) )
-				{
-					mVolumeSlicerParams = pParams;
-				}	
-			}
-		}
-	}
+    Ogre::MeshPtr mesh = obj->convertToMesh("Slice.mesh");
+    mSceneMgr->destroyManualObject(obj);
+
+    mSlicePlane = mSceneMgr->createEntity("Slicer", "Slice.mesh");
+    mSlicePlane->setMaterialName("VolumeRender/SlicerCustom");
+    mSlicePlane->getSubEntity(0)->setCustomParameter(1, Ogre::Vector4());
 
 	
 	mSliceNode =  mSceneMgr->getRootSceneNode()->createChildSceneNode();
@@ -358,17 +343,13 @@ bool VolumeRenderingDemoApp::frameStarted(const Ogre::FrameEvent &evt)
 
 	Real inc = mSlicerInc * evt.timeSinceLastFrame;
 	
-	if(mSlicer+inc>1.0f || mSlicer+inc<0.0f)
+    if(mSlicer+inc<1.0f && mSlicer+inc>0.0f)
+        mSlicer+=inc;
+    else
 		mSlicerInc = -mSlicerInc;
-	mSlicer+=inc;
-	//mSlicePlane->getSection(0)->setCustomParameter(0, Vector4(mSlicer, 0,0,0));
+	
 
-	// update uniform
-	if (!mVolumeSlicerParams.isNull())
-		mVolumeSlicerParams->setNamedConstant( "slice", mSlicer );
-
-
-
+    mSlicePlane->getSubEntity(0)->setCustomParameter(1, Ogre::Vector4(mSlicer, 0, 0, 0));
 	mSliceNode->setPosition(-250, 0, mSlicer*100);
 
 	return OgreApplication::frameStarted(evt);
