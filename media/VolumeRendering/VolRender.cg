@@ -12,8 +12,9 @@ struct VertexOutput
   float3 texcoord : TEXCOORD0;
 };
 //------------------------------------------------------------------------------
-VertexOutput main_vp( AppData IN,
-                      uniform float4x4 worldViewProj)
+VertexOutput main_vp( AppData IN
+                    , uniform float4x4 worldViewProj
+                    )
 {
 
   VertexOutput OUT;
@@ -24,9 +25,17 @@ VertexOutput main_vp( AppData IN,
 }
 //------------------------------------------------------------------------------
 void main_fp(float3 texcoord	: TEXCOORD0,
-	     out float3 oColor	: COLOR,
-	     uniform sampler3D volume)
+	     out float3 oColor	: COLOR
+         ,uniform sampler3D volume
+         ,uniform float3 lightPosition
+         ,uniform float4x4 cameraPosition )
 {
-  oColor = tex3D(volume, texcoord);
+	float3 geomPos = texcoord.xyz;
+	float3 geomDir = normalize(geomPos - cameraPosition[3].xyz);
+
+   
+ 
+	float val = tex3D(volume, texcoord).a	;
+    oColor = float3(1.0, 1.0, 1.0) * val;
 }
 //------------------------------------------------------------------------------

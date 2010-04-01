@@ -25,9 +25,6 @@ protected:
 	void createScene();
 	void _loadVolume();
 	void _create3DTextureFromVolume();
-	void _loadSlice( const std::string &_directory
-					,const std::string& _basename);
-	void _createTextureFromSlice();
 	void _createCube();
 	void _createSlice();
 
@@ -42,8 +39,6 @@ protected:
 	Ogre::SceneNode  *mCubeNode;
 
 	//Ogre::ManualObject *mSlicePlane;
-
-    //Ogre::Rectangle2D *mSlicePlane;
     Ogre::Entity *mSlicePlane;
 	Ogre::SceneNode  *mSliceNode;
 

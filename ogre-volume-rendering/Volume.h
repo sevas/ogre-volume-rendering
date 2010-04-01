@@ -22,6 +22,7 @@ public:
 
 	void loadSlices(const std::string&, unsigned);
 	unsigned short getVoxelValue(unsigned, unsigned, unsigned);
+    unsigned char Volume::getVoxelByteValue(unsigned _x, unsigned _y, unsigned _z);
 
 protected:
 	Slices mSlices;

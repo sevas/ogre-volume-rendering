@@ -4,6 +4,18 @@
 #include <boost/format.hpp>
 
 
+typedef union
+{
+    Ogre::uint32 u32;
+    Ogre::uint8  u8[4];
+
+}U32_U8;
+
+const int R=0;
+const int G=1;
+const int B=2;
+const int A=3;
+
 //-----------------------------------------------------------------------------
 VolumeRenderingDemoApp::VolumeRenderingDemoApp(void)
 	:OgreApplication("Ogre Volume Rendering")
@@ -25,9 +37,9 @@ void VolumeRenderingDemoApp::createScene()
 	_create3DTextureFromVolume();
 	_createCube();
 
-	_loadSlice("../volumes/MRbrain2", "MRbrain");
+	//_loadSlice("../volumes/MRbrain2", "MRbrain");
 	_createSlice();
-	_createTextureFromSlice();
+	//_createTextureFromSlice();
 }
 //-----------------------------------------------------------------------------
 void VolumeRenderingDemoApp::_loadVolume()
@@ -39,13 +51,13 @@ void VolumeRenderingDemoApp::_create3DTextureFromVolume()
 {	using namespace Ogre;
 	// Create the texture
 	mVolumeTexture = TextureManager::getSingleton().createManual(
-		"MRbrain Volume", // name
+		"MRbrain Volume", 
 		ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME,
-		TEX_TYPE_3D,      // type
-		256, 256,         // width & height
-		109,		      // # slices
-		0,                // number of mipmaps
-	    PF_SHORT_L,			 // pixel format
+		TEX_TYPE_3D,      
+		256, 256,         
+		109,		      
+		0,                
+	    PF_BYTE_RGBA,	
 		TU_DEFAULT);		
 		
 
@@ -54,8 +66,7 @@ void VolumeRenderingDemoApp::_create3DTextureFromVolume()
 	buffer->lock(HardwareBuffer::HBL_NORMAL);
 	const Ogre::PixelBox &pb = buffer->getCurrentLock();
 
-	Ogre::uint16 *pbptr = static_cast<Ogre::uint16*>(pb.data);
-	//size_t x, y, z;
+	Ogre::uint32 *pbptr = static_cast<Ogre::uint32*>(pb.data);
 
 	for(size_t z = pb.front ; z<pb.back ; z++)
 	{
@@ -63,9 +74,12 @@ void VolumeRenderingDemoApp::_create3DTextureFromVolume()
 		{
 			for(size_t x=pb.left ; x<pb.right; x++)
 			{
-				Ogre::uint16 val = mVolume.getVoxelValue(x, y, z);
-				pbptr[x]= val;
-
+                U32_U8 val;
+                val.u8[R] = 0;
+                val.u8[G] = 0;
+                val.u8[B] = 0;
+                val.u8[A] = mVolume.getVoxelByteValue(x, y, z);
+                pbptr[x] = val.u32;
 			}
 			pbptr += pb.rowPitch;
 		}
@@ -74,85 +88,11 @@ void VolumeRenderingDemoApp::_create3DTextureFromVolume()
 
 
 	buffer->unlock();
-
-
-	// Create a material using the texture
-	mVolumeMaterial = MaterialManager::getSingleton().create(
-						"VolumeMaterial", // name
-						ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
-
+   
+    mVolumeMaterial = MaterialManager::getSingleton().getByName("VolumeRender/Raycasting");
 	mVolumeMaterial->getTechnique(0)->getPass(0)->createTextureUnitState("MRbrain Volume");
-	mVolumeMaterial->getTechnique(0)->getPass(0)->setSceneBlending(SBT_TRANSPARENT_ALPHA);
-
-}
-//-----------------------------------------------------------------------------
-void VolumeRenderingDemoApp::_loadSlice( const std::string &_directory
-										,const std::string& _basename)
-{
-	mSlice.resize(256*256);
-	std::ifstream file;
-	boost::format fmt("%s/%s.%d");
-	fmt % _directory % "MRbrain" % 50;
-	std::string filename = fmt.str();
-	file.open(filename.c_str(), std::ios_base::binary);
-	if(file)
-	{
-		for(unsigned i=0 ; i<256*256; ++i)
-		{
-
-			//unsigned short val;
-			U16_U8 val;
-			val.u8[0] = file.get();
-			val.u8[1] = file.get();
-			mSlice[i] = val.u16;
-		}
-		file.close();
-	}
-}
-//-----------------------------------------------------------------------------
-void VolumeRenderingDemoApp::_createTextureFromSlice()
-{
-	using namespace Ogre;
-	// Create the texture
-	mSliceTexture = TextureManager::getSingleton().createManual(
-		"MRbrain Slice", // name
-		ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME,
-		TEX_TYPE_2D,      // type
-		256, 256,         // width & height
-		0,                // number of mipmaps
-		PF_SHORT_L,			 // pixel format
-		HardwareBuffer::HBU_STATIC_WRITE_ONLY );		
-
-	
-	HardwarePixelBufferSharedPtr buffer = mSliceTexture->getBuffer();
-
-	buffer->lock(HardwareBuffer::HBL_NORMAL);
-	const Ogre::PixelBox &pb = buffer->getCurrentLock();
-
-	Ogre::uint16 *pbptr = static_cast<Ogre::uint16*>(pb.data);
-
-	for (size_t y=pb.top ; y<pb.bottom; y++)
-	{
-		for(size_t x=pb.left ; x<pb.right; x++)
-		{
-			Ogre::uint16 val = mSlice[y*256 + x];
-			pbptr[x]= val;
-
-		}
-		pbptr += pb.rowPitch;
-	}
 
 
-
-	buffer->unlock();
-
-
-	// Create a material using the texture
-	mSliceMaterial = MaterialManager::getSingleton().create(
-		"SliceMaterial", // name
-		ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
-
-	mSliceMaterial->getTechnique(0)->getPass(0)->createTextureUnitState("MRbrain Slice");
 }
 //-----------------------------------------------------------------------------
 void VolumeRenderingDemoApp::_createCube()
@@ -276,22 +216,17 @@ void VolumeRenderingDemoApp::_createCube()
 
 	mUnitCube->end();
 
-	mUnitCube->setMaterialName(0, "VolumeMaterial");
+	mUnitCube->setMaterialName(0, "VolumeRender/Raycasting");
 	mCubeNode = mSceneMgr->getRootSceneNode()->createChildSceneNode();
 	mCubeNode->attachObject(mUnitCube);
 	mCubeNode->scale(100,100,100);
-	mCubeNode->translate(-50,0,-50);
+	//mCubeNode->translate(-50,0,-50);
 }
 //-----------------------------------------------------------------------------
 void VolumeRenderingDemoApp::_createSlice()
 {	using namespace Ogre;
 
-	unsigned idx=0;
-	float z=0.3f;
-
-    
-
-
+	unsigned idx=0;    
     Ogre::ManualObject *obj = mSceneMgr->createManualObject("Slice");
 
 	obj->begin("VolumeRender/SlicerCustom", RenderOperation::OT_TRIANGLE_STRIP);
@@ -333,8 +268,8 @@ void VolumeRenderingDemoApp::_createSlice()
 	
 	mSliceNode =  mSceneMgr->getRootSceneNode()->createChildSceneNode();
 	mSliceNode->attachObject(mSlicePlane);
-	mSliceNode->scale(100,100,10);
-	mSliceNode->translate(-250, 0, 1);
+	mSliceNode->scale(100,100,1);
+	mSliceNode->translate(-120, 0, 1);
 }
 
 //-----------------------------------------------------------------------------
@@ -350,7 +285,7 @@ bool VolumeRenderingDemoApp::frameStarted(const Ogre::FrameEvent &evt)
 	
 
     mSlicePlane->getSubEntity(0)->setCustomParameter(1, Ogre::Vector4(mSlicer, 0, 0, 0));
-	mSliceNode->setPosition(-250, 0, mSlicer*100);
+	mSliceNode->setPosition(-120, 0, mSlicer*100);
 
 	return OgreApplication::frameStarted(evt);
 }

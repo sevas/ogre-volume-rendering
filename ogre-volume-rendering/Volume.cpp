@@ -69,3 +69,16 @@ unsigned short Volume::getVoxelValue(unsigned _x, unsigned _y, unsigned _z)
 		return -1;
 }
 //-----------------------------------------------------------------------------
+unsigned char Volume::getVoxelByteValue(unsigned _x, unsigned _y, unsigned _z)
+{
+    unsigned char res=120;
+    if (_x < mSliceWidth && _y < mSliceHeight && _z < mNSlices)
+    {
+        unsigned short val = mSlices[_z][_y*mSliceWidth + _x];
+ 
+        res = static_cast<unsigned char>(float(val) / 65536 * 255);
+
+    }
+
+    return res;
+}

@@ -32,8 +32,7 @@ void main_fp(float3 texcoord	: TEXCOORD0,
 	     uniform sampler3D volume)
 {
     float val = tex3D(volume, texcoord).a;
-    oColor = float3(1.0, 0.0, 0.0) ;
-  
+    oColor = float3(1.0, 1.0, 1.0) * val;
 }
 
 //------------------------------------------------------------------------------
