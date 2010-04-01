@@ -1,3 +1,4 @@
+// Taken from http://www.ogre3d.org/wiki/index.php/Simple_text
 #include "precompiled.h"
 
 #include "TextRenderer.h"

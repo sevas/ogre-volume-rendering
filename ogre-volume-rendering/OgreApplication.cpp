@@ -1,3 +1,8 @@
+/* This program is free software. It comes without any warranty, to
+ * the extent permitted by applicable law. You can redistribute it
+ * and/or modify it under the terms of the Do What The Fuck You Want
+ * To Public License, Version 2, as published by Sam Hocevar. See
+ * http://sam.zoy.org/wtfpl/COPYING for more details. */
 #include "precompiled.h"
 
 #include "OgreApplication.h"
@@ -8,7 +13,7 @@ using namespace Ogre;
 //-----------------------------------------------------------------------------
 OgreApplication::OgreApplication(const String &_title)
     :mWindowTitle(_title)
-	,mRoot(NULL)
+    ,mRoot(NULL)
     ,mCamera(NULL)
     ,mSceneMgr(NULL)
     ,mWindow(NULL)
@@ -17,7 +22,7 @@ OgreApplication::OgreApplication(const String &_title)
     ,mMouse(NULL)
     ,mRotateSpeed(0.5)
 {
-	
+    
 }
 //-----------------------------------------------------------------------------
 OgreApplication::~OgreApplication()
@@ -64,7 +69,7 @@ bool OgreApplication::initialise()
 
     createInputSystem();
     createFrameListener();
-	_createDebugOverlay();
+    _createDebugOverlay();
 
     return true;
 }
@@ -223,7 +228,7 @@ void OgreApplication::windowClosed(RenderWindow* rw)
 //-----------------------------------------------------------------------------
 bool OgreApplication::frameStarted(const FrameEvent& evt)
 {
-	_updateDebugOverlay();
+    _updateDebugOverlay();
     mKeyboard->capture();
     mMouse->capture();
     if (mKeyboard->isKeyDown(OIS::KC_ESCAPE))
@@ -349,73 +354,73 @@ void OgreApplication::_createGrid(int _units)
 //-----------------------------------------------------------------------------
 void OgreApplication::_createLight()
 {
-	mBBset = mSceneMgr->createBillboardSet("Light BB");
-	mBBset->setMaterialName("Objects/Flare");
-	mLightFlare = mBBset->createBillboard(Vector3::ZERO);
+    mBBset = mSceneMgr->createBillboardSet("Light BB");
+    mBBset->setMaterialName("Objects/Flare");
+    mLightFlare = mBBset->createBillboard(Vector3::ZERO);
 
-	mLight = mSceneMgr->createLight("main light");
-	mLight->setType(Light::LT_POINT);
-	mLight->setDiffuseColour(ColourValue::White);
-	mLight->setSpecularColour(ColourValue::White);
+    mLight = mSceneMgr->createLight("main light");
+    mLight->setType(Light::LT_POINT);
+    mLight->setDiffuseColour(ColourValue::White);
+    mLight->setSpecularColour(ColourValue::White);
 
-	mLightNode = mSceneMgr->getRootSceneNode()->createChildSceneNode("light node");
-	mLightNode->attachObject(mLight);
-	mLightNode->attachObject(mBBset);
+    mLightNode = mSceneMgr->getRootSceneNode()->createChildSceneNode("light node");
+    mLightNode->attachObject(mLight);
+    mLightNode->attachObject(mBBset);
 
 
-	//#ifdef ANIMATE_LIGHT
-	//	Real totalTime = 10;                
-	//
-	//	Animation *anim = mSceneMgr->createAnimation("Light Track", totalTime);
-	//	anim->setInterpolationMode(Animation::IM_SPLINE);
-	//
-	//	NodeAnimationTrack *track = anim->createNodeTrack(0, mLightNode);
-	//	TransformKeyFrame *key;      
-	//
-	//	Real precision = 36, amplitude = 300;
-	//	int keyframeIndex = 0;
-	//	for(float phi=0.0; phi <= 2*Math::PI; phi+= Math::PI / precision)
-	//	{
-	//		key = track->createNodeKeyFrame(phi * (totalTime/ (2*Math::PI)));
-	//		key->setTranslate(Vector3(amplitude*Math::Cos(phi)
-	//			,amplitude
-	//			,amplitude*Math::Sin(phi)));
-	//	}
-	//
-	//	mAnimState = mSceneMgr->createAnimationState("Light Track");
-	//	mAnimState->setEnabled(true);
-	//#else
-	mLightNode->setPosition(0, 500, 500);
-	//#endif
+    //#ifdef ANIMATE_LIGHT
+    //  Real totalTime = 10;                
+    //
+    //  Animation *anim = mSceneMgr->createAnimation("Light Track", totalTime);
+    //  anim->setInterpolationMode(Animation::IM_SPLINE);
+    //
+    //  NodeAnimationTrack *track = anim->createNodeTrack(0, mLightNode);
+    //  TransformKeyFrame *key;      
+    //
+    //  Real precision = 36, amplitude = 300;
+    //  int keyframeIndex = 0;
+    //  for(float phi=0.0; phi <= 2*Math::PI; phi+= Math::PI / precision)
+    //  {
+    //      key = track->createNodeKeyFrame(phi * (totalTime/ (2*Math::PI)));
+    //      key->setTranslate(Vector3(amplitude*Math::Cos(phi)
+    //          ,amplitude
+    //          ,amplitude*Math::Sin(phi)));
+    //  }
+    //
+    //  mAnimState = mSceneMgr->createAnimationState("Light Track");
+    //  mAnimState->setEnabled(true);
+    //#else
+    mLightNode->setPosition(0, 500, 500);
+    //#endif
 }
 //-----------------------------------------------------------------------------
 void OgreApplication::_createDebugOverlay()
 {
-	new TextRenderer();
+    new TextRenderer();
 
-	mDebugText = TextRenderer::getSingletonPtr();
+    mDebugText = TextRenderer::getSingletonPtr();
 
-	int x_offset=100, y_offset=18, w=100, h=18;
+    int x_offset=100, y_offset=18, w=100, h=18;
 
-	mDebugText->addTextBox("Batches_", "#Batches : "
-		, 10, 10, w, h
-		, ColourValue(0.7,0.7,0.7));
-	mDebugText->addTextBox("Batches", "0"
-		, x_offset, 10, w, h
-		, ColourValue(1.0,1.0,1.0));
-	mDebugText->addTextBox("FPS_", "#FPS : "
-		, 10, 10+y_offset, w, h
-		, ColourValue(0.7,0.7,0.7));
-	mDebugText->addTextBox("FPS", "0"
-		, x_offset, 10+y_offset, w, h
-		, ColourValue(1.0,1.0,1.0));
+    mDebugText->addTextBox("Batches_", "#Batches : "
+        , 10, 10, w, h
+        , ColourValue(0.7,0.7,0.7));
+    mDebugText->addTextBox("Batches", "0"
+        , x_offset, 10, w, h
+        , ColourValue(1.0,1.0,1.0));
+    mDebugText->addTextBox("FPS_", "#FPS : "
+        , 10, 10+y_offset, w, h
+        , ColourValue(0.7,0.7,0.7));
+    mDebugText->addTextBox("FPS", "0"
+        , x_offset, 10+y_offset, w, h
+        , ColourValue(1.0,1.0,1.0));
 
-	mDebugText->addTextBox("Triangles_", "#tris : "
-		, 10, 10+y_offset*2, w, h
-		, ColourValue(0.7,0.7,0.7));
-	mDebugText->addTextBox("Triangles", "0"
-		, x_offset, 10+y_offset*2, w, h
-		, ColourValue(1.0,1.0,1.0));
+    mDebugText->addTextBox("Triangles_", "#tris : "
+        , 10, 10+y_offset*2, w, h
+        , ColourValue(0.7,0.7,0.7));
+    mDebugText->addTextBox("Triangles", "0"
+        , x_offset, 10+y_offset*2, w, h
+        , ColourValue(1.0,1.0,1.0));
 
 
 
@@ -423,8 +428,8 @@ void OgreApplication::_createDebugOverlay()
 //-----------------------------------------------------------------------------
 void OgreApplication::_updateDebugOverlay()
 {
-	mDebugText->setText("Batches", StringConverter::toString(mWindow->getBatchCount()));
-	mDebugText->setText("FPS", StringConverter::toString(mWindow->getLastFPS()));
-	mDebugText->setText("Triangles", StringConverter::toString(mWindow->getTriangleCount()));
+    mDebugText->setText("Batches", StringConverter::toString(mWindow->getBatchCount()));
+    mDebugText->setText("FPS", StringConverter::toString(mWindow->getLastFPS()));
+    mDebugText->setText("Triangles", StringConverter::toString(mWindow->getTriangleCount()));
 }
 //-----------------------------------------------------------------------------

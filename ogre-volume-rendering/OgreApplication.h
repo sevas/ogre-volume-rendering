@@ -1,3 +1,9 @@
+/* This program is free software. It comes without any warranty, to
+ * the extent permitted by applicable law. You can redistribute it
+ * and/or modify it under the terms of the Do What The Fuck You Want
+ * To Public License, Version 2, as published by Sam Hocevar. See
+ * http://sam.zoy.org/wtfpl/COPYING for more details. */
+
 #ifndef __OgreApplication_h__
 #define __OgreApplication_h__
 
@@ -9,10 +15,10 @@
 
 using namespace Ogre;
 
-class OgreApplication	: public FrameListener
-						, public WindowEventListener 
-						, public OIS::MouseListener
-						, public OIS::KeyListener
+class OgreApplication   : public FrameListener
+                        , public WindowEventListener 
+                        , public OIS::MouseListener
+                        , public OIS::KeyListener
 {
 public:
    OgreApplication(const String&);
@@ -56,12 +62,12 @@ protected:
 
 protected:
     void _createGrid(int);
-	void _createLight();
-	void _createDebugOverlay();
-	void _updateDebugOverlay();
+    void _createLight();
+    void _createDebugOverlay();
+    void _updateDebugOverlay();
 
-	String mWindowTitle;
-	Root *mRoot;
+    String mWindowTitle;
+    Root *mRoot;
     Camera* mCamera;
     SceneManager* mSceneMgr;
     RenderWindow* mWindow;
@@ -73,12 +79,12 @@ protected:
     OIS::Keyboard *mKeyboard;
     OIS::Mouse *mMouse;
 
-	BillboardSet *mBBset;
-	Billboard *mLightFlare;
-	Light *mLight;
-	SceneNode *mLightNode;
+    BillboardSet *mBBset;
+    Billboard *mLightFlare;
+    Light *mLight;
+    SceneNode *mLightNode;
 
-	TextRenderer *mDebugText;
+    TextRenderer *mDebugText;
 };
  
 #endif // __OgreApplication_h__

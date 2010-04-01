@@ -1,20 +1,20 @@
 //------------------------------------------------------------------------------
 struct AppData
 {
-  float3 position   : POSITION;
-  float3 normal     : NORMAL;
-  float3 texcoord   : TEXCOORD0;
+    float3 position   : POSITION;
+    float3 normal     : NORMAL;
+    float3 texcoord   : TEXCOORD0;
 };
 
 struct VertexOutput
 {
-  float4 position : POSITION;
-  float3 texcoord : TEXCOORD0;
+    float4 position : POSITION;
+    float3 texcoord : TEXCOORD0;
 };
 //------------------------------------------------------------------------------
-VertexOutput main_vp( AppData IN,
-		      uniform float4    slice,
-		      uniform float4x4 worldViewProj)
+VertexOutput main_vp( AppData           IN
+                    , uniform float4    slice
+                    , uniform float4x4  worldViewProj)
 {
 
   VertexOutput OUT;
@@ -27,9 +27,9 @@ VertexOutput main_vp( AppData IN,
 }
 
 //------------------------------------------------------------------------------
-void main_fp(float3 texcoord	: TEXCOORD0,
-	     out float3 oColor	: COLOR,
-	     uniform sampler3D volume)
+void main_fp( float3            texcoord : TEXCOORD0
+            , out float3        oColor   : COLOR
+            , uniform sampler3D volume)
 {
     float val = tex3D(volume, texcoord).a;
     oColor = float3(1.0, 0.0, 0.0) ;
