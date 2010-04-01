@@ -33,6 +33,8 @@ void main_fp(float3 texcoord	: TEXCOORD0,
 {
     float val = tex3D(volume, texcoord).a;
     oColor = float3(1.0, 1.0, 1.0) * val;
+
+
 }
 
 //------------------------------------------------------------------------------

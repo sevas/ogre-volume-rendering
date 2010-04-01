@@ -46,10 +46,7 @@ protected:
 	MyCubeFace   mCubeFaces[6];
 
 	Volume::Slice mSlice;
-	Ogre::TexturePtr mSliceTexture;
 	Ogre::MaterialPtr mSliceMaterial;
-	Ogre::GpuProgramParametersSharedPtr mVolumeSlicerParams;
-
 	Ogre::Real mSlicer, mSlicerInc;
 };
 #endif // VolumeRenderingDemoApp_h__

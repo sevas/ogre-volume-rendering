@@ -32,10 +32,28 @@ void main_fp(float3 texcoord	: TEXCOORD0,
 {
 	float3 geomPos = texcoord.xyz;
 	float3 geomDir = normalize(geomPos - cameraPosition[3].xyz);
-
-   
+    float  inc = 0.01;
+//    float len = 0.0;
+    //float4 dd = float4(ddx(texcoord), ddy(texcoord));
  
-	float val = tex3D(volume, texcoord).a	;
-    oColor = float3(1.0, 1.0, 1.0) * val;
+	float sampledValue = tex3D(volume, geomPos).a;
+    bool done = false;
+    oColor = float3(0.0, 0.0, 0.0);
+
+    for(int i=0 ; i<50 ; i++)
+    {
+        geomPos = geomPos + (geomDir * inc);
+        sampledValue = tex3D(volume, geomPos).a;
+        if(!done)
+        {
+            if(sampledValue > 0.2)
+            {
+                done = true;
+                oColor = float3(1.0, 1.0, 1.0) * sampledValue;
+            }
+        }
+    }
+
+
 }
 //------------------------------------------------------------------------------

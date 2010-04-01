@@ -38,7 +38,7 @@ void VolumeRenderingDemoApp::createScene()
 	_createCube();
 
 	//_loadSlice("../volumes/MRbrain2", "MRbrain");
-	_createSlice();
+	//_createSlice();
 	//_createTextureFromSlice();
 }
 //-----------------------------------------------------------------------------
@@ -276,16 +276,16 @@ void VolumeRenderingDemoApp::_createSlice()
 bool VolumeRenderingDemoApp::frameStarted(const Ogre::FrameEvent &evt)
 {	using namespace Ogre;
 
-	Real inc = mSlicerInc * evt.timeSinceLastFrame;
-	
-    if(mSlicer+inc<1.0f && mSlicer+inc>0.0f)
-        mSlicer+=inc;
-    else
-		mSlicerInc = -mSlicerInc;
-	
+	//Real inc = mSlicerInc * evt.timeSinceLastFrame;
+	//
+ //   if(mSlicer+inc<1.0f && mSlicer+inc>0.0f)
+ //       mSlicer+=inc;
+ //   else
+	//	mSlicerInc = -mSlicerInc;
+	//
 
-    mSlicePlane->getSubEntity(0)->setCustomParameter(1, Ogre::Vector4(mSlicer, 0, 0, 0));
-	mSliceNode->setPosition(-120, 0, mSlicer*100);
+ //   mSlicePlane->getSubEntity(0)->setCustomParameter(1, Ogre::Vector4(mSlicer, 0, 0, 0));
+	//mSliceNode->setPosition(-120, 0, mSlicer*100);
 
 	return OgreApplication::frameStarted(evt);
 }
